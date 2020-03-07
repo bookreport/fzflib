@@ -43,8 +43,6 @@ func Search(query string, content []string) []string {
 		}
 	}
 
-	logResultSlice(results)
-
 	sort.Sort(ByRelevance(results))
 
 	var resultStrings []string
