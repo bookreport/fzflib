@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/bookreport/fzflib/util"
@@ -48,52 +47,6 @@ type Delimiter struct {
 // String returns the string representation of a Delimeter.
 func (d Delimiter) String() string {
 	return fmt.Sprintf("Delimiter{regex: %v, str: &%q}", d.regex, *d.str)
-}
-
-func newRange(begin int, end int) Range {
-	if begin == 1 {
-		begin = rangeEllipsis
-	}
-	if end == -1 {
-		end = rangeEllipsis
-	}
-	return Range{begin, end}
-}
-
-// ParseRange parses nth-expression and returns the corresponding Range object
-func ParseRange(str *string) (Range, bool) {
-	if (*str) == ".." {
-		return newRange(rangeEllipsis, rangeEllipsis), true
-	} else if strings.HasPrefix(*str, "..") {
-		end, err := strconv.Atoi((*str)[2:])
-		if err != nil || end == 0 {
-			return Range{}, false
-		}
-		return newRange(rangeEllipsis, end), true
-	} else if strings.HasSuffix(*str, "..") {
-		begin, err := strconv.Atoi((*str)[:len(*str)-2])
-		if err != nil || begin == 0 {
-			return Range{}, false
-		}
-		return newRange(begin, rangeEllipsis), true
-	} else if strings.Contains(*str, "..") {
-		ns := strings.Split(*str, "..")
-		if len(ns) != 2 {
-			return Range{}, false
-		}
-		begin, err1 := strconv.Atoi(ns[0])
-		end, err2 := strconv.Atoi(ns[1])
-		if err1 != nil || err2 != nil || begin == 0 || end == 0 {
-			return Range{}, false
-		}
-		return newRange(begin, end), true
-	}
-
-	n, err := strconv.Atoi(*str)
-	if err != nil || n == 0 {
-		return Range{}, false
-	}
-	return newRange(n, n), true
 }
 
 func withPrefixLengths(tokens []string, begin int) []Token {
