@@ -7,7 +7,7 @@ import (
 // item represents each input line. 56 bytes.
 type item struct {
 	text        util.Chars // 32 = 24 + 1 + 1 + 2 + 4
-	transformed *[]Token   // 8
+	transformed *[]token   // 8
 	origText    *[]byte    // 8
 }
 

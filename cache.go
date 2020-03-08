@@ -5,19 +5,19 @@ import "sync"
 // queryCache associates strings to lists of items
 type queryCache map[string][]result
 
-// ChunkCache associates chunk and query string to lists of items
-type ChunkCache struct {
+// chunkCache associates chunk and query string to lists of items
+type chunkCache struct {
 	mutex sync.Mutex
 	cache map[*chunk]*queryCache
 }
 
-// NewChunkCache returns a new ChunkCache
-func NewChunkCache() ChunkCache {
-	return ChunkCache{sync.Mutex{}, make(map[*chunk]*queryCache)}
+// newChunkCache returns a new chunkCache
+func newChunkCache() chunkCache {
+	return chunkCache{sync.Mutex{}, make(map[*chunk]*queryCache)}
 }
 
 // Add adds the list to the cache
-func (cc *ChunkCache) Add(chunk *chunk, key string, list []result) {
+func (cc *chunkCache) Add(chunk *chunk, key string, list []result) {
 	if len(key) == 0 || !chunk.IsFull() || len(list) > queryCacheMax {
 		return
 	}
@@ -33,8 +33,8 @@ func (cc *ChunkCache) Add(chunk *chunk, key string, list []result) {
 	(*qc)[key] = list
 }
 
-// Lookup is called to lookup ChunkCache
-func (cc *ChunkCache) Lookup(chunk *chunk, key string) []result {
+// Lookup is called to lookup chunkCache
+func (cc *chunkCache) Lookup(chunk *chunk, key string) []result {
 	if len(key) == 0 || !chunk.IsFull() {
 		return nil
 	}
@@ -52,7 +52,7 @@ func (cc *ChunkCache) Lookup(chunk *chunk, key string) []result {
 	return nil
 }
 
-func (cc *ChunkCache) Search(chunk *chunk, key string) []result {
+func (cc *chunkCache) Search(chunk *chunk, key string) []result {
 	if len(key) == 0 || !chunk.IsFull() {
 		return nil
 	}

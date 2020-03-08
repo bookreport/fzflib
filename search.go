@@ -14,12 +14,12 @@ func Search(query string, content []string) []string {
 			true,
 			algo.FuzzyMatchV2,
 			true,
-			CaseSmart,
+			searchCaseSmart,
 			true,
 			true,
 			false,
-			make([]Range, 0),
-			Delimiter{},
+			make([]exprRange, 0),
+			inputDelimiter{},
 			runes,
 		)
 	}
@@ -43,7 +43,7 @@ func Search(query string, content []string) []string {
 		}
 	}
 
-	sort.Sort(ByRelevance(results))
+	sort.Sort(byRelevance(results))
 
 	var resultStrings []string
 	for _, r := range results {

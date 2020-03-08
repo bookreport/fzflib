@@ -18,17 +18,17 @@ const (
 	byEnd
 )
 
-// Offset holds two 32-bit integers denoting the offsets of a matched substring
-type Offset [2]int32
+// substrOffset holds two 32-bit integers denoting the offsets of a matched substring
+type substrOffset [2]int32
 
 type result struct {
 	item   *item
 	points [4]uint16
 }
 
-func buildResult(item *item, offsets []Offset, score int) result {
+func buildResult(item *item, offsets []substrOffset, score int) result {
 	if len(offsets) > 1 {
-		sort.Sort(ByOrder(offsets))
+		sort.Sort(byOrder(offsets))
 	}
 
 	result := result{item: item}
@@ -90,49 +90,49 @@ func minRank() result {
 	return result{item: &minItem, points: [4]uint16{math.MaxUint16, 0, 0, 0}}
 }
 
-// ByOrder is for sorting substring offsets
-type ByOrder []Offset
+// byOrder is for sorting substring offsets
+type byOrder []substrOffset
 
-func (a ByOrder) Len() int {
+func (a byOrder) Len() int {
 	return len(a)
 }
 
-func (a ByOrder) Swap(i, j int) {
+func (a byOrder) Swap(i, j int) {
 	a[i], a[j] = a[j], a[i]
 }
 
-func (a ByOrder) Less(i, j int) bool {
+func (a byOrder) Less(i, j int) bool {
 	ioff := a[i]
 	joff := a[j]
 	return (ioff[0] < joff[0]) || (ioff[0] == joff[0]) && (ioff[1] <= joff[1])
 }
 
-// ByRelevance is for sorting Items
-type ByRelevance []result
+// byRelevance is for sorting Items
+type byRelevance []result
 
-func (a ByRelevance) Len() int {
+func (a byRelevance) Len() int {
 	return len(a)
 }
 
-func (a ByRelevance) Swap(i, j int) {
+func (a byRelevance) Swap(i, j int) {
 	a[i], a[j] = a[j], a[i]
 }
 
-func (a ByRelevance) Less(i, j int) bool {
+func (a byRelevance) Less(i, j int) bool {
 	return compareRanks(a[i], a[j], false)
 }
 
-// ByRelevanceTac is for sorting Items
-type ByRelevanceTac []result
+// byRelevanceTac is for sorting Items
+type byRelevanceTac []result
 
-func (a ByRelevanceTac) Len() int {
+func (a byRelevanceTac) Len() int {
 	return len(a)
 }
 
-func (a ByRelevanceTac) Swap(i, j int) {
+func (a byRelevanceTac) Swap(i, j int) {
 	a[i], a[j] = a[j], a[i]
 }
 
-func (a ByRelevanceTac) Less(i, j int) bool {
+func (a byRelevanceTac) Less(i, j int) bool {
 	return compareRanks(a[i], a[j], true)
 }

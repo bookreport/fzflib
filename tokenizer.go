@@ -9,53 +9,53 @@ import (
 	"github.com/bookreport/fzflib/util"
 )
 
-// Case denotes case-sensitivity of search
-type Case int
+// searchCase denotes case-sensitivity of search
+type searchCase int
 
-// Case-sensitivities
+// searchCase-sensitivities
 const (
-	CaseSmart Case = iota
-	CaseIgnore
-	CaseRespect
+	searchCaseSmart searchCase = iota
+	searchCaseIgnore
+	searchCaseRespect
 )
 
 const rangeEllipsis = 0
 
-// Range represents nth-expression
-type Range struct {
+// exprRange represents nth-expression
+type exprRange struct {
 	begin int
 	end   int
 }
 
-// Token contains the tokenized part of the strings and its prefix length
-type Token struct {
+// token contains the tokenized part of the strings and its prefix length
+type token struct {
 	text         *util.Chars
 	prefixLength int32
 }
 
-// String returns the string representation of a Token.
-func (t Token) String() string {
-	return fmt.Sprintf("Token{text: %s, prefixLength: %d}", t.text, t.prefixLength)
+// String returns the string representation of a token.
+func (t token) String() string {
+	return fmt.Sprintf("token{text: %s, prefixLength: %d}", t.text, t.prefixLength)
 }
 
-// Delimiter for tokenizing the input
-type Delimiter struct {
+// inputDelimiter for tokenizing the input
+type inputDelimiter struct {
 	regex *regexp.Regexp
 	str   *string
 }
 
-// String returns the string representation of a Delimeter.
-func (d Delimiter) String() string {
-	return fmt.Sprintf("Delimiter{regex: %v, str: &%q}", d.regex, *d.str)
+// String returns the string representation of a inputDelimiter.
+func (d inputDelimiter) String() string {
+	return fmt.Sprintf("inputDelimiter{regex: %v, str: &%q}", d.regex, *d.str)
 }
 
-func withPrefixLengths(tokens []string, begin int) []Token {
-	ret := make([]Token, len(tokens))
+func withPrefixLengths(tokens []string, begin int) []token {
+	ret := make([]token, len(tokens))
 
 	prefixLength := begin
 	for idx := range tokens {
 		chars := util.ToChars([]byte(tokens[idx]))
-		ret[idx] = Token{&chars, int32(prefixLength)}
+		ret[idx] = token{&chars, int32(prefixLength)}
 		prefixLength += chars.Length()
 	}
 	return ret
@@ -104,8 +104,8 @@ func awkTokenizer(input string) ([]string, int) {
 	return ret, prefixLength
 }
 
-// Tokenize tokenizes the given string with the delimiter
-func Tokenize(text string, delimiter Delimiter) []Token {
+// tokenize splits apart the given string using the delimiter
+func tokenize(text string, delimiter inputDelimiter) []token {
 	if delimiter.str == nil && delimiter.regex == nil {
 		// AWK-style (\S+\s*)
 		tokens, prefixLength := awkTokenizer(text)
@@ -132,7 +132,7 @@ func Tokenize(text string, delimiter Delimiter) []Token {
 	return withPrefixLengths(tokens, 0)
 }
 
-func joinTokens(tokens []Token) string {
+func joinTokens(tokens []token) string {
 	var output bytes.Buffer
 	for _, token := range tokens {
 		output.WriteString(token.text.ToString())
@@ -140,9 +140,9 @@ func joinTokens(tokens []Token) string {
 	return output.String()
 }
 
-// Transform is used to transform the input when --with-nth option is given
-func Transform(tokens []Token, withNth []Range) []Token {
-	transTokens := make([]Token, len(withNth))
+// transform is used to transform the input when --with-nth option is given
+func transform(tokens []token, withNth []exprRange) []token {
+	transTokens := make([]token, len(withNth))
 	numTokens := len(tokens)
 	for idx, r := range withNth {
 		parts := []*util.Chars{}
@@ -210,7 +210,7 @@ func Transform(tokens []Token, withNth []Range) []Token {
 		} else {
 			prefixLength = 0
 		}
-		transTokens[idx] = Token{&merged, prefixLength}
+		transTokens[idx] = token{&merged, prefixLength}
 	}
 	return transTokens
 }
