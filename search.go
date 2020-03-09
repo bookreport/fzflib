@@ -7,7 +7,7 @@ import (
 	"github.com/bookreport/fzflib/util"
 )
 
-func Search(query string, content []string) []string {
+func Search(query string, content [][]byte) [][]byte {
 	sortCriteria = []criterion{byScore, byLength}
 	patternBuilder := func(runes []rune) *pattern {
 		return buildPattern(
@@ -37,7 +37,7 @@ func Search(query string, content []string) []string {
 	slab := util.MakeSlab(slab16Size, slab32Size)
 	for _, c := range content {
 		var i item
-		chunkList.trans(&i, []byte(c))
+		chunkList.trans(&i, c)
 		if result, _, _ := pattern.MatchItem(&i, false, slab); result != nil {
 			results = append(results, *result)
 		}
@@ -45,10 +45,10 @@ func Search(query string, content []string) []string {
 
 	sort.Sort(byRelevance(results))
 
-	var resultStrings []string
+	var resultsByteSlices [][]byte
 	for _, r := range results {
-		resultStrings = append(resultStrings, r.item.text.ToString())
+		resultsByteSlices = append(resultsByteSlices, r.item.text.Bytes())
 	}
 
-	return resultStrings
+	return resultsByteSlices
 }
