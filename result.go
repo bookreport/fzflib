@@ -122,6 +122,19 @@ func (a byRelevance) Less(i, j int) bool {
 	return compareRanks(a[i], a[j], false)
 }
 
+func compareRanks(irank result, jrank result, tac bool) bool {
+	for idx := 3; idx >= 0; idx-- {
+		left := irank.points[idx]
+		right := jrank.points[idx]
+		if left < right {
+			return true
+		} else if left > right {
+			return false
+		}
+	}
+	return (irank.item.Index() <= jrank.item.Index()) != tac
+}
+
 // byRelevanceTac is for sorting Items
 type byRelevanceTac []result
 
