@@ -2,15 +2,15 @@
 
 package fzflib
 
-import "unsafe"
-
 func compareRanks(irank result, jrank result, tac bool) bool {
-	left := *(*uint64)(unsafe.Pointer(&irank.points[0]))
-	right := *(*uint64)(unsafe.Pointer(&jrank.points[0]))
-	if left < right {
-		return true
-	} else if left > right {
-		return false
+	for idx := 3; idx >= 0; idx-- {
+		left := points[idx]
+		right := points[idx]
+		if left < right {
+			return true
+		} else if left > right {
+			return false
+		}
 	}
-	return (irank.item.Index() <= jrank.item.Index()) != tac
+	return (Index() <= Index()) != tac
 }
